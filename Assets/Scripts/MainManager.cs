@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.IO;
 
 public class MainManager : MonoBehaviour
 {
@@ -11,10 +12,15 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text HighScoreText;
     public GameObject GameOverText;
+
+    private string highScorePlayerName;
+    private int highScore;
     
     private bool m_Started = false;
     private int m_Points;
+    private int endPoints;
     
     private bool m_GameOver = false;
 
@@ -36,6 +42,8 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+
+        HighScoreText.text = "HIGH SCORE: " + highScorePlayerName + ": " + highScore;
     }
 
     private void Update()
@@ -72,5 +80,53 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+
+        endPoints = m_Points;
+
+        if (endPoints > highScore)
+        {
+
+        }
     }
+
+    //created a serializable data holder
+    [System.Serializable]
+    class SaveData
+    {
+        public string playerName;
+        public int highScore;
+    }
+
+    public void HighScoreSave()
+    {
+        SaveData data = new SaveData();
+
+        data.playerName = DataManager.Instance.playerName;
+        data.highScore = endPoints;
+
+        //turning data to json format
+        string json = JsonUtility.ToJson(data);
+
+        //turning json string to a json file
+        File.WriteAllText(Application.persistentDataPath + "/highscore.json", json);
+    }
+
+    public void HighScoreLoad()
+    {
+        string path = Application.persistentDataPath + "/highscore.json";
+
+        if (File.Exists(path))
+        {
+            //reads the recorded file
+            string json = File.ReadAllText(path);
+
+            //sets data to saved highScore values
+            SaveData data = JsonUtility.FromJson<SaveData>(json);
+
+            highScore = data.highScore;
+            highScorePlayerName = data.playerName;
+
+        }
+    }
+
 }
