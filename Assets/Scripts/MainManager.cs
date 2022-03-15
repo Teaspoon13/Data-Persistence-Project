@@ -43,7 +43,10 @@ public class MainManager : MonoBehaviour
             }
         }
 
+        HighScoreLoad();
+        
         HighScoreText.text = "HIGH SCORE: " + highScorePlayerName + ": " + highScore;
+
     }
 
     private void Update()
@@ -85,7 +88,7 @@ public class MainManager : MonoBehaviour
 
         if (endPoints > highScore)
         {
-
+            HighScoreSave();
         }
     }
 
